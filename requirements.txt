@@ -5,3 +5,4 @@ numpy>=1.26.0
 plotly>=5.18.0
 requests>=2.32.0
 Pillow>=10.0.1
+tushare>=1.2.80
