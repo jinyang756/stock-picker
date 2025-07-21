@@ -483,7 +483,7 @@ def main():
             
             # 股票表格 - 彩色编码
             st.markdown('<div class="data-container">', unsafe_allow_html=True)
-            styled_df = selected_stocks.style.applymap(
+            styled_df = selected_stocks.style.map(
                 lambda x: 'background-color: #FFE4E1' if x > 0 else 'background-color: #E0FFFF', 
                 subset=['涨跌幅', '预测涨跌幅']
             ).format({
