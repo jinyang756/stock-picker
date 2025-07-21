@@ -12,7 +12,21 @@ import random
 # 注意：这里假设您已经在环境变量中设置了TUSHARE_TOKEN
 # 如果没有，可以直接替换为您的密钥，但不建议硬编码
 import os
-ts.set_token(os.getenv('TUSHARE_TOKEN', '真实的Tushare API密钥'))
+import toml
+
+# 读取TOML配置文件
+config = {}
+try:
+    with open('.env.toml', 'r', encoding='utf-8') as f:
+        config = toml.load(f)
+except Exception as e:
+    st.warning(f"无法加载配置文件: {e}")
+
+# 设置Tushare API密钥
+TS_TOKEN = config.get('TUSHARE_API_KEY', '')
+if not TS_TOKEN:
+    TS_TOKEN = os.getenv('TUSHARE_TOKEN', '真实的Tushare API密钥')
+ts.set_token(TS_TOKEN)
 
 # 页面设置 - 浮夸风格
 st.set_page_config(
