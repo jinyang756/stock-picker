@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八卦阵选股决策系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- 配置Tailwind自定义主题 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cosmic: {
+                            dark: '#0A0F1D',
+                            light: '#1A243A',
+                            accent: '#7C3AED',
+                            glow: '#E2E8F0'
+                        },
+                        trigram: {
+                            qian: '#FFD700',    // 乾-金
+                            kun: '#8B4513',     // 坤-土
+                            zhen: '#FF6347',    // 震-雷
+                            xun: '#32CD32',     // 巽-风
+                            kan: '#1E90FF',     // 坎-水
+                            li: '#FF4500',      // 离-火
+                            gen: '#9370DB',     // 艮-山
+                            dui: '#FF69B4'      // 兑-泽
+                        }
+                    },
+                    fontFamily: {
+                        xuan: ['"Ma Shan Zheng"', 'cursive'],
+                        sans: ['Inter', 'sans-serif']
+                    },
+                    animation: {
+                        'slow-rotate': 'slowRotate 60s linear infinite',
+                        'fast-rotate': 'fastRotate 5s linear infinite',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'energy-burst': 'energyBurst 1s ease-out forwards'
+                    },
+                    keyframes: {
+                        slowRotate: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        },
+                        fastRotate: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(255, 215, 0, 0.5)' },
+                            '50%': { boxShadow: '0 0 30px rgba(255, 215, 0, 0.8)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        energyBurst: {
+                            '0%': { opacity: '0', transform: 'scale(0.8)' },
+                            '50%': { opacity: '0.8', transform: 'scale(1.1)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow-glow {
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            }
+            .border-glow {
+                box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            }
+            .grid-jiugong {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+            }
+            .trigram-line {
+                height: 2px;
+                background-color: theme('colors.trigram.qian');
+                margin: 3px 0;
+            }
+            .trigram-line-broken {
+                background: linear-gradient(to right, theme('colors.trigram.qian') 40%, transparent 40%, transparent 60%, theme('colors.trigram.qian') 60%);
+            }
+        }
+    </style>
+    
+    <!-- 引入中文字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+</head>
+<body class="bg-cosmic-dark text-white font-sans overflow-x-hidden">
+    <!-- 星空背景 -->
+    <div class="fixed inset-0 z-0 opacity-20">
+        <div class="absolute inset-0 bg-[url('https://picsum.photos/id/1002/1920/1080')] bg-cover bg-center"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-cosmic-dark/90 to-cosmic-dark"></div>
+    </div>
+    
+    <!-- 页面头部 -->
+    <header class="relative z-10 py-4 px-6 bg-cosmic-dark/80 backdrop-blur-md border-b border-white/10">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-trigram-qian to-cosmic-accent flex items-center justify-center animate-pulse-glow">
+                    <i class="fa fa-compass text-xl"></i>
+                </div>
+                <h1 class="text-2xl font-xuan text-trigram-qian text-shadow-glow">八卦选股决策系统</h1>
+            </div>
+            <nav class="hidden md:flex gap-6 text-sm">
+                <a href="#" class="hover:text-trigram-qian transition-colors duration-300">首页</a>
+                <a href="#" class="hover:text-trigram-qian transition-colors duration-300">历史回测</a>
+                <a href="#" class="hover:text-trigram-qian transition-colors duration-300">理论解析</a>
+                <a href="#" class="hover:text-trigram-qian transition-colors duration-300">关于我们</a>
+            </nav>
+            <button class="md:hidden text-white text-xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+    </header>
+    
+    <!-- 主内容区 -->
+    <main class="relative z-10 container mx-auto px-4 py-12">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-xuan text-trigram-qian mb-3 text-shadow-glow">三才八卦·智能选股</h2>
+            <p class="text-white/70 max-w-2xl mx-auto">融合传统玄学智慧与现代金融数据分析，通过八卦推演揭示市场趋势</p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- 左侧八卦阵 -->
+            <div class="relative aspect-square w-full max-w-2xl mx-auto">
+                <!-- 九宫格背景 -->
+                <div class="absolute inset-[10%] grid-jiugong gap-1 opacity-10">
+                    <div class="bg-white/5 rounded"></div>
+                    <div class="bg-white/5 rounded"></div>
+                    <div class="bg-white/5 rounded"></div>
+                    <div class="bg-white/5 rounded"></div>
+                    <div class="bg-white/5 rounded"></div>
+                    <div class="bg-white/5 rounded"></div>
+                    <div class="bg-white/5 rounded"></div>
+                    <div class="bg-white/5 rounded"></div>
+                    <div class="bg-white/5 rounded"></div>
+                </div>
+                
+                <!-- 外层光晕层 -->
+                <div class="absolute inset-[5%] rounded-full bg-gradient-to-r from-trigram-qian/10 to-cosmic-accent/10 blur-xl animate-pulse-glow"></div>
+                
+                <!-- 天干地支层 -->
+                <div class="absolute inset-[5%] rounded-full border-2 border-trigram-qian/30 animate-slow-rotate">
+                    <!-- 天干 -->
+                    <div class="absolute text-trigram-qian text-shadow-glow font-xuan" style="top: 5%; left: 50%; transform: translateX(-50%)">甲</div>
+                    <div class="absolute text-trigram-qian text-shadow-glow font-xuan" style="top: 15%; left: 80%;">乙</div>
+                    <div class="absolute text-trigram-qian text-shadow-glow font-xuan" style="top: 45%; left: 95%;">丙</div>
+                    <div class="absolute text-trigram-qian text-shadow-glow font-xuan" style="top: 80%; left: 80%;">丁</div>
+                    <div class="absolute text-trigram-qian text-shadow-glow font-xuan" style="bottom: 5%; left: 50%; transform: translateX(-50%)">戊</div>
+                    <div class="absolute text-trigram-qian text-shadow-glow font-xuan" style="top: 80%; left: 20%;">己</div>
+                    <div class="absolute text-trigram-qian text-shadow-glow font-xuan" style="top: 45%; left: 5%;">庚</div>
+                    <div class="absolute text-trigram-qian text-shadow-glow font-xuan" style="top: 15%; left: 20%;">辛</div>
+                    <div class="absolute text-trigram-qian text-shadow-glow font-xuan" style="top: 30%; left: 35%;">壬</div>
+                    <div class="absolute text-trigram-qian text-shadow-glow font-xuan" style="top: 30%; left: 65%;">癸</div>
+                    
+                    <!-- 地支 -->
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 20%; left: 50%; transform: translateX(-50%)">子</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 30%; left: 75%;">丑</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 50%; left: 85%;">寅</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 70%; left: 75%;">卯</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 80%; left: 50%; transform: translateX(-50%)">辰</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 70%; left: 25%;">巳</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 50%; left: 15%;">午</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 30%; left: 25%;">未</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 20%; left: 25%;">申</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 20%; left: 75%;">酉</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 30%; left: 15%;">戌</div>
+                    <div class="absolute text-trigram-qian/80 text-shadow-glow" style="top: 30%; left: 85%;">亥</div>
+                </div>
+                
+                <!-- 八卦卦象层 -->
+                <div class="absolute inset-[25%] rounded-full border-2 border-trigram-qian/40 animate-slow-rotate" style="animation-direction: reverse;">
+                    <!-- 乾卦 - 西北 -->
+                    <div class="absolute flex flex-col items-center justify-center w-16 h-16" style="top: 10%; left: 10%;">
+                        <div class="trigram-line w-12"></div>
+                        <div class="trigram-line w-12"></div>
+                        <div class="trigram-line w-12"></div>
+                        <span class="text-trigram-qian mt-2 font-xuan">乾</span>
+                    </div>
+                    
+                    <!-- 坤卦 - 西南 -->
+                    <div class="absolute flex flex-col items-center justify-center w-16 h-16" style="bottom: 10%; left: 10%;">
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <span class="text-trigram-kun mt-2 font-xuan">坤</span>
+                    </div>
+                    
+                    <!-- 震卦 - 东 -->
+                    <div class="absolute flex flex-col items-center justify-center w-16 h-16" style="top: 50%; left: 0%; transform: translateY(-50%);">
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <div class="trigram-line w-12"></div>
+                        <div class="trigram-line w-12"></div>
+                        <span class="text-trigram-zhen mt-2 font-xuan">震</span>
+                    </div>
+                    
+                    <!-- 巽卦 - 东南 -->
+                    <div class="absolute flex flex-col items-center justify-center w-16 h-16" style="top: 10%; right: 10%;">
+                        <div class="trigram-line w-12"></div>
+                        <div class="trigram-line w-12"></div>
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <span class="text-trigram-xun mt-2 font-xuan">巽</span>
+                    </div>
+                    
+                    <!-- 坎卦 - 北 -->
+                    <div class="absolute flex flex-col items-center justify-center w-16 h-16" style="top: 0%; left: 50%; transform: translateX(-50%);">
+                        <div class="trigram-line w-12"></div>
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <div class="trigram-line w-12"></div>
+                        <span class="text-trigram-kan mt-2 font-xuan">坎</span>
+                    </div>
+                    
+                    <!-- 离卦 - 南 -->
+                    <div class="absolute flex flex-col items-center justify-center w-16 h-16" style="bottom: 0%; left: 50%; transform: translateX(-50%);">
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <div class="trigram-line w-12"></div>
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <span class="text-trigram-li mt-2 font-xuan">离</span>
+                    </div>
+                    
+                    <!-- 艮卦 - 东北 -->
+                    <div class="absolute flex flex-col items-center justify-center w-16 h-16" style="bottom: 10%; right: 10%;">
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <div class="trigram-line w-12"></div>
+                        <span class="text-trigram-gen mt-2 font-xuan">艮</span>
+                    </div>
+                    
+                    <!-- 兑卦 - 西 -->
+                    <div class="absolute flex flex-col items-center justify-center w-16 h-16" style="top: 50%; right: 0%; transform: translateY(-50%);">
+                        <div class="trigram-line w-12"></div>
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <div class="trigram-line trigram-line-broken w-12"></div>
+                        <span class="text-trigram-dui mt-2 font-xuan">兑</span>
+                    </div>
+                </div>
+                
+                <!-- 中心太极图 -->
+                <div class="absolute inset-[45%] rounded-full bg-gradient-to-r from-cosmic-dark to-cosmic-accent/30 animate-pulse-glow">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-1/2 h-full bg-cosmic-dark rounded-l-full"></div>
+                        <div class="w-1/2 h-full bg-cosmic-glow/20 rounded-r-full"></div>
+                    </div>
+                    <div class="absolute left-1/2 top-0 w-1/4 h-1/4 -translate-x-1/2 bg-cosmic-dark rounded-full"></div>
+                    <div class="absolute left-1/2 bottom-0 w-1/4 h-1/4 -translate-x-1/2 bg-cosmic-glow/20 rounded-full"></div>
+                    <div class="absolute left-1/2 top-1/4 w-1/8 h-1/8 -translate-x-1/2 bg-cosmic-glow/20 rounded-full"></div>
+                    <div class="absolute left-1/2 bottom-1/4 w-1/8 h-1/8 -translate-x-1/2 bg-cosmic-dark rounded-full"></div>
+                    <div id="center-text" class="absolute inset-0 flex items-center justify-center text-lg font-xuan text-trigram-qian text-shadow-glow">
+                        三才合一
+                    </div>
+                </div>
+                
+                <!-- 能量光线 -->
+                <div id="energy-rays" class="absolute inset-0 opacity-0">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(255, 215, 0, 0.3)" stroke-width="1" />
+                        <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(255, 215, 0, 0.3)" stroke-width="1" />
+                        <line x1="0" y1="0" x2="100" y2="100" stroke="rgba(255, 215, 0, 0.3)" stroke-width="1" />
+                        <line x1="0" y1="100" x2="100" y2="0" stroke="rgba(255, 215, 0, 0.3)" stroke-width="1" />
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- 右侧控制面板与结果 -->
+            <div class="space-y-8">
+                <!-- 选股参数设置 -->
+                <div class="bg-cosmic-light/50 backdrop-blur-md rounded-xl p-6 border border-white/10 shadow-xl">
+                    <h3 class="text-xl font-xuan text-trigram-qian mb-4 flex items-center">
+                        <i class="fa fa-sliders mr-2"></i> 选股参数
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-white/70 mb-1">市场趋势</label>
+                            <select id="market-trend" class="w-full bg-cosmic-dark border border-white/20 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-trigram-qian/50">
+                                <option>上涨趋势</option>
+                                <option>震荡整理</option>
+                                <option>下跌趋势</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-white/70 mb-1">风险偏好</label>
+                            <select id="risk-level" class="w-full bg-cosmic-dark border border-white/20 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-trigram-qian/50">
+                                <option>稳健型</option>
+                                <option>平衡型</option>
+                                <option>激进型</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-white/70 mb-1">行业偏好</label>
+                            <select id="industry" class="w-full bg-cosmic-dark border border-white/20 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-trigram-qian/50">
+                                <option>全行业</option>
+                                <option>新能源</option>
+                                <option>信息技术</option>
+                                <option>生物医药</option>
+                                <option>消费零售</option>
+                                <option>金融证券</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-white/70 mb-1">选股数量</label>
+                            <select id="stock-count" class="w-full bg-cosmic-dark border border-white/20 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-trigram-qian/50">
+                                <option>5只</option>
+                                <option>8只</option>
+                                <option>10只</option>
+                                <option>15只</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="start-analysis" class="mt-6 w-full bg-gradient-to-r from-trigram-qian to-cosmic-accent hover:opacity-90 text-cosmic-dark font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-[1.02] focus:outline-none flex items-center justify-center gap-2">
+                        <i class="fa fa-play-circle"></i> 启动八卦推演
+                    </button>
+                </div>
+                
+                <!-- 选股结果 -->
+                <div id="result-panel" class="bg-cosmic-light/50 backdrop-blur-md rounded-xl p-6 border border-white/10 shadow-xl hidden">
+                    <h3 class="text-xl font-xuan text-trigram-qian mb-4 flex items-center">
+                        <i class="fa fa-star mr-2"></i> 八卦选股结果
+                    </h3>
+                    
+                    <!-- 核心指标 -->
+                    <div class="grid grid-cols-3 gap-3 mb-5">
+                        <div class="bg-cosmic-dark/70 rounded-lg p-3 text-center">
+                            <p class="text-xs text-white/60">平均涨幅预测</p>
+                            <p class="text-xl font-bold text-trigram-qian">+5.82%</p>
+                        </div>
+                        <div class="bg-cosmic-dark/70 rounded-lg p-3 text-center">
+                            <p class="text-xs text-white/60">胜率概率</p>
+                            <p class="text-xl font-bold text-trigram-xun">78.3%</p>
+                        </div>
+                        <div class="bg-cosmic-dark/70 rounded-lg p-3 text-center">
+                            <p class="text-xs text-white/60">风险评级</p>
+                            <p class="text-xl font-bold text-trigram-kan">中低</p>
+                        </div>
+                    </div>
+
+                    <!-- 股票列表 -->
+                    <div class="overflow-hidden rounded-lg border border-white/10">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="bg-cosmic-dark/50">
+                                    <th class="py-2 px-3 text-left">代码</th>
+                                    <th class="py-2 px-3 text-left">名称</th>
+                                    <th class="py-2 px-3 text-left">行业</th>
+                                    <th class="py-2 px-3 text-right">评分</th>
+                                    <th class="py-2 px-3 text-right">预测</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-white/10 hover:bg-white/5 transition-colors">
+                                    <td class="py-2 px-3">600519</td>
+                                    <td class="py-2 px-3">贵州茅台</td>
+                                    <td class="py-2 px-3">白酒</td>
+                                    <td class="py-2 px-3 text-right text-trigram-qian">92</td>
+                                    <td class="py-2 px-3 text-right text-green-400">+4.2%</td>
+                                </tr>
+                                <tr class="border-b border-white/10 hover:bg-white/5 transition-colors">
+                                    <td class="py-2 px-3">300750</td>
+                                    <td class="py-2 px-3">宁德时代</td>
+                                    <td class="py-2 px-3">新能源</td>
+                                    <td class="py-2 px-3 text-right text-trigram-qian">89</td>
+                                    <td class="py-2 px-3 text-right text-green-400">+7.5%</td>
+                                </tr>
+                                <tr class="border-b border-white/10 hover:bg-white/5 transition-colors">
+                                    <td class="py-2 px-3">000858</td>
+                                    <td class="py-2 px-3">五粮液</td>
+                                    <td class="py-2 px-3">白酒</td>
+                                    <td class="py-2 px-3 text-right text-trigram-qian">87</td>
+                                    <td class="py-2 px-3 text-right text-green-400">+3.8%</td>
+                                </tr>
+                                <tr class="border-b border-white/10 hover:bg-white/5 transition-colors">
+                                    <td class="py-2 px-3">601318</td>
+                                    <td class="py-2 px-3">中国平安</td>
+                                    <td class="py-2 px-3">保险</td>
+                                    <td class="py-2 px-3 text-right text-trigram-qian">85</td>
+                                    <td class="py-2 px-3 text-right text-green-400">+2.9%</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="py-2 px-3">002594</td>
+                                    <td class="py-2 px-3">比亚迪</td>
+                                    <td class="py-2 px-3">汽车</td>
+                                    <td class="py-2 px-3 text-right text-trigram-qian">83</td>
+                                    <td class="py-2 px-3 text-right text-green-400">+9.1%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 下载按钮 -->
+                    <button class="mt-4 text-sm px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center gap-1">
+                        <i class="fa fa-download"></i> 下载完整报告
+                    </button>
+                </div>
+                
+                <!-- 三才维度分析 -->
+                <div id="analysis-panel" class="bg-cosmic-light/50 backdrop-blur-md rounded-xl p-6 border border-white/10 shadow-xl hidden">
+                    <h3 class="text-xl font-xuan text-trigram-qian mb-4 flex items-center">
+                        <i class="fa fa-chart-pie mr-2"></i> 三才维度分析
+                    </h3>
+                    <div class="h-64">
+                        <canvas id="trigram-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- 页脚 -->
+    <footer class="relative z-10 mt-16 py-6 px-4 border-t border-white/10 backdrop-blur-md bg-cosmic-dark/70">
+        <div class="container mx-auto text-center text-white/50 text-sm">
+            <p>© 2025 八卦选股决策系统 | 基于九州战略罗盘算法构建</p>
+            <p class="mt-2">免责声明：本系统仅供研究参考，不构成任何投资建议</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 获取DOM元素
+            const startBtn = document.getElementById('start-analysis');
+            const outerRing = document.querySelector('.animate-slow-rotate');
+            const innerRing = document.querySelector('.animate-slow-rotate[style*="reverse"]');
+            const energyRays = document.getElementById('energy-rays');
+            const centerText = document.getElementById('center-text');
+            const resultPanel = document.getElementById('result-panel');
+            const analysisPanel = document.getElementById('analysis-panel');
+            
+            // 初始化图表
+            const ctx = document.getElementById('trigram-chart').getContext('2d');
+            const trigramChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['天道（宏观）', '地道（行业）', '人道（情绪）', '乾（价值）', '坤（成长）', '坎（风险）'],
+                    datasets: [{
+                        label: '选股组合得分',
+                        data: [85, 92, 78, 88, 90, 82],
+                        backgroundColor: 'rgba(124, 58, 237, 0.2)',
+                        borderColor: 'rgba(226, 232, 240, 0.8)',
+                        pointBackgroundColor: '#FFD700',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#FFD700'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { color: 'rgba(255, 255, 255, 0.7)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.5)', backdropColor: 'transparent', max: 100 }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: 'rgba(255, 255, 255, 0.7)' } }
+                    }
+                }
+            });
+
+            // 点击开始按钮触发动画
+            startBtn.addEventListener('click', () => {
+                // 重置状态
+                resultPanel.classList.add('hidden');
+                analysisPanel.classList.add('hidden');
+                energyRays.classList.remove('opacity-100');
+                energyRays.classList.add('opacity-0');
+                
+                // 加速旋转
+                outerRing.style.animation = 'fast-rotate 5s linear infinite';
+                innerRing.style.animation = 'fast-rotate 3s linear infinite reverse';
+                centerText.textContent = '推演中...';
+                
+                // 状态变化时间线
+                setTimeout(() => {
+                    centerText.textContent = '天道测算';
+                }, 1000);
+                
+                setTimeout(() => {
+                    centerText.textContent = '地道分析';
+                }, 2000);
+                
+                setTimeout(() => {
+                    centerText.textContent = '人道洞察';
+                }, 3000);
+                
+                // 光线爆发效果
+                setTimeout(() => {
+                    energyRays.classList.remove('opacity-0');
+                    energyRays.classList.add('opacity-100');
+                    energyRays.style.transition = 'opacity 1s ease-in-out';
+                    centerText.textContent = '推演完成';
+                    
+                    // 恢复正常旋转速度
+                    outerRing.style.animation = 'slow-rotate 60s linear infinite';
+                    innerRing.style.animation = 'slow-rotate 60s linear infinite reverse';
+                    
+                    // 显示结果
+                    setTimeout(() => {
+                        resultPanel.classList.remove('hidden');
+                        resultPanel.classList.add('animate-fade-in');
+                        analysisPanel.classList.remove('hidden');
+                        analysisPanel.classList.add('animate-fade-in');
+                    }, 1000);
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+</html>

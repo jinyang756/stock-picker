@@ -692,6 +692,42 @@ def main() -> None:
             font-size: 1.2rem;
             margin-bottom: 8px;
         }
+        .media-section {
+            margin: 30px auto;
+            max-width: 800px;
+            padding: 20px;
+            background-color: rgba(10, 10, 26, 0.7);
+            border-radius: 15px;
+            border: 2px solid #C0C0C0;
+        }
+        .section-title {
+            color: #FFFFFF;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px #C0C0C0;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .mystery-image {
+            max-width: 100%;
+            border-radius: 10px;
+            border: 3px solid #C0C0C0;
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
+        }
+        .video-container {
+            display: flex;
+            justify-content: center;
+        }
+        .cosmic-video {
+            max-width: 100%;
+            border-radius: 10px;
+            border: 3px solid #C0C0C0;
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
+        }
         @keyframes rotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -708,6 +744,19 @@ def main() -> None:
         <div class="subtitle">九天玄女授命·八卦阵图推演·二十四节气校准·七十二地煞选股</div>
         <div class="subtitle">讯飞通正式入驻九州集团（香港）国际控股有限公司——星河图数字空间站</div>
         <div class="subtitle">战略合作伙伴签约·九州战略罗盘决策系统接入·强大资本力量加持</div>
+    </div>
+    <div class="media-section">
+        <h3 class="section-title">玄机图谱</h3>
+        <div class="image-container">
+            <img src="picture/photo_2025-07-22_18-40-21.jpg" alt="天机玄机图" class="mystery-image">
+        </div>
+        <h3 class="section-title">星河运转</h3>
+        <div class="video-container">
+            <video controls class="cosmic-video">
+                <source src="picture/videos/IMG_3175.MP4" type="video/mp4">
+                您的浏览器不支持视频播放
+            </video>
+        </div>
     </div>
     ''', unsafe_allow_html=True)
     
