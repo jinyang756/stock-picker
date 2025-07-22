@@ -626,13 +626,94 @@ def calculate_human_dimension(stock_data: pd.DataFrame) -> pd.DataFrame:
 
 # 主页面布局
 def main() -> None:
-    # 顶部标题区域 - 浮夸设计
-    st.markdown('<h1 class="main-header">讯飞通 - AI选股系统</h1>', unsafe_allow_html=True)
-    st.markdown("""
-    <div style="background-color: #4169E1; padding: 10px; border-radius: 10px; color: white; text-align: center;">
-        <p style="font-size: 1.2rem;">基于AI算法的专业选股工具，为您挖掘市场潜力股</p>
+    # 顶部标题区域 - 天机罗盘主题设计
+    st.markdown('''
+    <style>
+        .compass-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: radial-gradient(circle, #0a0a1a 0%, #050510 100%);
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #FFD700;
+        }
+        .compass-bg {
+            position: absolute;
+            width: 380px;
+            height: 380px;
+            background-image: radial-gradient(circle, transparent 30%, rgba(139, 0, 0, 0.3) 70%, rgba(139, 0, 0, 0.6) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bagua {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            background-image: linear-gradient(45deg, rgba(255, 215, 0, 0.2) 0%, transparent 50%, rgba(255, 215, 0, 0.2) 100%),
+                              linear-gradient(-45deg, rgba(255, 215, 0, 0.2) 0%, transparent 50%, rgba(255, 215, 0, 0.2) 100%);
+            border-radius: 50%;
+            border: 2px solid #FFD700;
+        }
+        .compass-needle {
+            position: absolute;
+            width: 180px;
+            height: 6px;
+            background: linear-gradient(90deg, transparent 0%, #FFD700 50%, transparent 100%);
+            transform-origin: center;
+            animation: rotate 20s linear infinite;
+        }
+        .compass-needle::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #FFD700;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .title-text {
+            position: relative;
+            z-index: 10;
+            color: #FFD700;
+            text-align: center;
+            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
+        }
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <div class="compass-container">
+        <div class="compass-bg"></div>
+        <div class="bagua"></div>
+        <div class="compass-needle"></div>
+        <div class="title-text">
+            <div class="main-title">天机罗盘 - 奇门遁甲AI选股系统</div>
+            <div class="subtitle">融汇五行八卦之玄机，推演奇门遁甲之妙算，洞察天机运转之奥秘</div>
+            <div class="subtitle">九天玄女授命·八卦阵图推演·二十四节气校准·七十二地煞选股</div>
+            <div class="subtitle">讯飞通正式入驻九州集团（香港）国际控股有限公司——星河图数字空间站</div>
+            <div class="subtitle">战略合作伙伴签约·九州战略罗盘决策系统接入·强大资本力量加持</div>
+        </div>
     </div>
-    """, unsafe_allow_html=True)
+    ''', unsafe_allow_html=True)
     
     # 侧边栏 - 用户参数设置
     st.sidebar.markdown('<h2 class="sidebar-header">选股参数设置</h2>', unsafe_allow_html=True)
