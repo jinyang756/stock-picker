@@ -640,7 +640,7 @@ def main() -> None:
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 3px solid #FFD700;
+            border: 3px solid #C0C0C0;
         }
         .compass-bg {
             position: absolute;
@@ -656,16 +656,16 @@ def main() -> None:
             position: absolute;
             width: 280px;
             height: 280px;
-            background-image: linear-gradient(45deg, rgba(255, 215, 0, 0.2) 0%, transparent 50%, rgba(255, 215, 0, 0.2) 100%),
-                              linear-gradient(-45deg, rgba(255, 215, 0, 0.2) 0%, transparent 50%, rgba(255, 215, 0, 0.2) 100%);
+            background-image: linear-gradient(45deg, rgba(192, 192, 192, 0.2) 0%, transparent 50%, rgba(192, 192, 192, 0.2) 100%),
+                              linear-gradient(-45deg, rgba(192, 192, 192, 0.2) 0%, transparent 50%, rgba(192, 192, 192, 0.2) 100%);
             border-radius: 50%;
-            border: 2px solid #FFD700;
+            border: 2px solid #C0C0C0;
         }
         .compass-needle {
             position: absolute;
             width: 180px;
             height: 6px;
-            background: linear-gradient(90deg, transparent 0%, #FFD700 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, #C0C0C0 50%, transparent 100%);
             transform-origin: center;
             animation: rotate 20s linear infinite;
         }
@@ -674,7 +674,7 @@ def main() -> None:
             position: absolute;
             width: 12px;
             height: 12px;
-            background-color: #FFD700;
+            background-color: #C0C0C0;
             border-radius: 50%;
             left: 50%;
             top: 50%;
@@ -683,14 +683,18 @@ def main() -> None:
         .title-text {
             position: relative;
             z-index: 10;
-            color: #FFD700;
+            color: #FFFFFF;
             text-align: center;
-            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
+            text-shadow: 0 0 10px #FFFFFF, 0 0 20px #FFFFFF;
         }
         .main-title {
             font-size: 2.2rem;
             font-weight: bold;
             margin-bottom: 10px;
+            background: linear-gradient(90deg, #FFFFFF, #C0C0C0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         .subtitle {
             font-size: 1.2rem;
