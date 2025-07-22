@@ -632,8 +632,10 @@ def main() -> None:
         .compass-container {
             position: relative;
             width: 100%;
-            height: 400px;
-            background: radial-gradient(circle, #0a0a1a 0%, #050510 100%);
+            height: 500px;
+            background-image: url('deity.png');
+            background-size: cover;
+            background-position: center;
             border-radius: 15px;
             overflow: hidden;
             display: flex;
@@ -642,30 +644,21 @@ def main() -> None:
             justify-content: center;
             border: 3px solid #C0C0C0;
         }
-        .compass-bg {
-            position: absolute;
-            width: 380px;
-            height: 380px;
-            background-image: radial-gradient(circle, transparent 30%, rgba(139, 0, 0, 0.3) 70%, rgba(139, 0, 0, 0.6) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
         .bagua {
             position: absolute;
             width: 280px;
             height: 280px;
-            background-image: linear-gradient(45deg, rgba(192, 192, 192, 0.2) 0%, transparent 50%, rgba(192, 192, 192, 0.2) 100%),
-                              linear-gradient(-45deg, rgba(192, 192, 192, 0.2) 0%, transparent 50%, rgba(192, 192, 192, 0.2) 100%);
+            background-image: linear-gradient(45deg, rgba(192, 192, 192, 0.3) 0%, transparent 50%, rgba(192, 192, 192, 0.3) 100%),
+                              linear-gradient(-45deg, rgba(192, 192, 192, 0.3) 0%, transparent 50%, rgba(192, 192, 192, 0.3) 100%);
             border-radius: 50%;
             border: 2px solid #C0C0C0;
+            opacity: 0.8;
         }
         .compass-needle {
             position: absolute;
             width: 180px;
             height: 6px;
-            background: linear-gradient(90deg, transparent 0%, #C0C0C0 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, #FFFFFF 50%, transparent 100%);
             transform-origin: center;
             animation: rotate 20s linear infinite;
         }
@@ -674,18 +667,17 @@ def main() -> None:
             position: absolute;
             width: 12px;
             height: 12px;
-            background-color: #C0C0C0;
+            background-color: #FFFFFF;
             border-radius: 50%;
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
         }
         .title-text {
-            position: relative;
-            z-index: 10;
+            margin-top: 20px;
             color: #FFFFFF;
             text-align: center;
-            text-shadow: 0 0 10px #FFFFFF, 0 0 20px #FFFFFF;
+            text-shadow: 0 0 10px #C0C0C0, 0 0 20px #808080;
         }
         .main-title {
             font-size: 2.2rem;
@@ -709,13 +701,13 @@ def main() -> None:
         <div class="compass-bg"></div>
         <div class="bagua"></div>
         <div class="compass-needle"></div>
-        <div class="title-text">
-            <div class="main-title">天机罗盘 - 奇门遁甲AI选股系统</div>
-            <div class="subtitle">融汇五行八卦之玄机，推演奇门遁甲之妙算，洞察天机运转之奥秘</div>
-            <div class="subtitle">九天玄女授命·八卦阵图推演·二十四节气校准·七十二地煞选股</div>
-            <div class="subtitle">讯飞通正式入驻九州集团（香港）国际控股有限公司——星河图数字空间站</div>
-            <div class="subtitle">战略合作伙伴签约·九州战略罗盘决策系统接入·强大资本力量加持</div>
-        </div>
+    </div>
+    <div class="title-text">
+        <div class="main-title">天机罗盘 - 奇门遁甲AI选股系统</div>
+        <div class="subtitle">融汇五行八卦之玄机，推演奇门遁甲之妙算，洞察天机运转之奥秘</div>
+        <div class="subtitle">九天玄女授命·八卦阵图推演·二十四节气校准·七十二地煞选股</div>
+        <div class="subtitle">讯飞通正式入驻九州集团（香港）国际控股有限公司——星河图数字空间站</div>
+        <div class="subtitle">战略合作伙伴签约·九州战略罗盘决策系统接入·强大资本力量加持</div>
     </div>
     ''', unsafe_allow_html=True)
     
