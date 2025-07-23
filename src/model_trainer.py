@@ -38,12 +38,12 @@ class ModelTrainer:
 
             # 分割训练集和测试集
             test_size = Config.get('model.test_size', 0.2)
-random_state = Config.get('model.random_state', 42)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+            random_state = Config.get('model.random_state', 42)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
 
             # 训练随机森林模型
             n_estimators = Config.get('model.n_estimators', 100)
-model = RandomForestRegressor(n_estimators=n_estimators, random_state=random_state)
+            model = RandomForestRegressor(n_estimators=n_estimators, random_state=random_state)
             model.fit(X_train, y_train)
 
             # 评估模型
