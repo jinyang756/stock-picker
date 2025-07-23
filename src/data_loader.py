@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import logging
 import random
-datetime
+import datetime
 
 from utils.logger import Logger
 logger = Logger.get_logger("data_loader")
