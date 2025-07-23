@@ -8,6 +8,7 @@
 
 ```
 stock-picker/
+├── stock_picker.py   # 主程序入口
 ├── src/
 │   ├── data_loader.py       # 数据加载模块
 │   ├── feature_engineer.py  # 特征工程模块
@@ -68,6 +69,12 @@ pip install -r requirements.txt
 ## 使用说明
 
 1. 运行应用
+
+```bash
+python stock_picker.py
+```
+
+或者
 
 ```bash
 python src/main.py
