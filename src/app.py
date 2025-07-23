@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import logging
 import random
+import streamlit as st
 from data_loader import DataLoader
 from feature_engineer import FeatureEngineer
 from model_trainer import ModelTrainer
@@ -12,6 +13,9 @@ from backtester import Backtester
 from utils.logger import Logger
 from utils.config import Config
 logger = Logger.get_logger("app")
+
+# 配置Streamlit以减少警告
+# st.set_option('deprecation.showPyplotGlobalUse', False)  # 此选项在当前版本不被识别
 
 class StockPickerApp:
     """选股应用类"""
