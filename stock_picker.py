@@ -88,7 +88,7 @@ def fetch_stock_data() -> pd.DataFrame:
     try:
         logger.info("开始获取股票数据")
         # 获取A股列表
-        stock_basic = bs.query_stock_basic(code_name="", fields="code,code_name,industry,concept")
+        stock_basic = bs.query_stock_basic(code_name="")
         
         if stock_basic.error_code != '0':
             logger.error(f"获取A股列表失败: {stock_basic.error_msg}")
