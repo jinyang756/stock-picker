@@ -10,19 +10,19 @@ class StockSelectionStrategies:
     """选股策略类"""
 
     @staticmethod
-    def jiuzhou_strategy(stock_data: pd.DataFrame, market_trend: str, risk_preference: str, industry_preference: list) -> pd.DataFrame:
+    def strategic_compass_derivation(stock_data: pd.DataFrame, market_trend: str, risk_preference: str, industry_preference: list) -> pd.DataFrame:
         """
-        九州策略选股
+        战略罗盘推衍选股
         Args:
             stock_data: 股票数据
             market_trend: 市场趋势
             risk_preference: 风险偏好
             industry_preference: 行业偏好
-        Returns:
+        returns:
             选中的股票DataFrame
         """
         try:
-            logger.info(f"应用九州策略选股，市场趋势: {market_trend}, 风险偏好: {risk_preference}, 行业偏好: {industry_preference}")
+            logger.info(f"应用战略罗盘推衍选股，市场趋势: {market_trend}, 风险偏好: {risk_preference}, 行业偏好: {industry_preference}")
 
             # 模拟行业过滤
             if industry_preference and '全部' not in industry_preference:
@@ -39,21 +39,23 @@ class StockSelectionStrategies:
             # 模拟根据风险偏好调整
             if risk_preference == '高风险':
                 # 选择综合得分高且波动大的股票
-                high_risk_count = Config.get('strategy.high_risk_count', 20)
+                high_risk_count = Config.get('strategy.high_risk_count', 5)
                 stock_data = stock_data.sort_values('综合得分', ascending=False).head(high_risk_count)
             elif risk_preference == '低风险':
                 # 选择综合得分较高且波动小的股票
-                low_risk_count = Config.get('strategy.low_risk_count', 10)
+                low_risk_count = Config.get('strategy.low_risk_count', 5)
                 stock_data = stock_data.sort_values('综合得分', ascending=False).head(low_risk_count)
             else:
                 # 适中风险
-                medium_risk_count = Config.get('strategy.medium_risk_count', 15)
+                medium_risk_count = Config.get('strategy.medium_risk_count', 5)
                 stock_data = stock_data.sort_values('综合得分', ascending=False).head(medium_risk_count)
 
-            logger.info(f"九州策略选股完成，选中股票数量: {len(stock_data)}")
+            # 筛选预测涨跌幅为正数且大于3%的股票
+            stock_data = stock_data[stock_data['预测涨跌幅'] > 3]
+            logger.info(f"战略罗盘推衍选股完成，选中股票数量: {len(stock_data)}")
             return stock_data
         except Exception as e:
-            logger.error(f"九州策略选股失败: {str(e)}")
+            logger.error(f"战略罗盘推衍选股失败: {str(e)}")
             return pd.DataFrame()
 
     @staticmethod
@@ -81,15 +83,17 @@ class StockSelectionStrategies:
 
             # 模拟根据风险偏好调整
             if risk_preference == '高风险':
-                high_risk_count = Config.get('strategy.high_risk_count', 20)
+                high_risk_count = Config.get('strategy.high_risk_count', 5)
                 stock_data = stock_data.sort_values('ai_score', ascending=False).head(high_risk_count)
             elif risk_preference == '低风险':
-                low_risk_count = Config.get('strategy.low_risk_count', 10)
+                low_risk_count = Config.get('strategy.low_risk_count', 5)
                 stock_data = stock_data.sort_values('ai_score', ascending=False).head(low_risk_count)
             else:
-                medium_risk_count = Config.get('strategy.medium_risk_count', 15)
+                medium_risk_count = Config.get('strategy.medium_risk_count', 5)
                 stock_data = stock_data.sort_values('ai_score', ascending=False).head(medium_risk_count)
 
+            # 筛选预测涨跌幅为正数且大于3%的股票
+            stock_data = stock_data[stock_data['预测涨跌幅'] > 3]
             logger.info(f"AI策略选股完成，选中股票数量: {len(stock_data)}")
             return stock_data
         except Exception as e:
